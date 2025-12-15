@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Memoir - Personal Life Story App</title>
+    <link rel="stylesheet" href="styles.css">
+<script src="https://sites.super.myninja.ai/_assets/ninja-daytona-script.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <h1>
+                <span>📖</span>
+                My Memoir
+            </h1>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="showView('dashboard')">
+                    🏠 Dashboard
+                </button>
+                <button class="btn-secondary" onclick="showView('chapters')">
+                    📚 Chapters
+                </button>
+                <button class="btn-primary" onclick="exportToPDF()">
+                    📥 Export PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message"></div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view active">
+            <h2>Welcome to Your Memoir</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 30px;">
+                Start writing your life story today. Organize your memories into chapters, add photos, and preserve your legacy for future generations.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Chapters</h3>
+                    <div class="stat-value" id="totalChapters">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Entries</h3>
+                    <div class="stat-value" id="totalEntries">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Photos Added</h3>
+                    <div class="stat-value" id="totalPhotos">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Words Written</h3>
+                    <div class="stat-value" id="totalWords">0</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3 style="margin-bottom: 15px;">Quick Actions</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="openNewChapterModal()">
+                        ➕ Create New Chapter
+                    </button>
+                    <button class="btn-secondary" onclick="showView('chapters')">
+                        📚 View All Chapters
+                    </button>
+                    <button class="btn-secondary" onclick="importData()">
+                        📤 Import Data
+                    </button>
+                    <button class="btn-secondary" onclick="exportData()">
+                        💾 Backup Data
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding: 20px; background: var(--surface); border-radius: 12px; border-left: 4px solid var(--primary-color);">
+                <h3 style="margin-bottom: 10px;">💡 Tips for Writing Your Memoir</h3>
+                <ul style="color: var(--text-secondary); line-height: 2;">
+                    <li>Start with what you remember most vividly</li>
+                    <li>Don't worry about chronological order - you can organize later</li>
+                    <li>Add photos to bring your memories to life</li>
+                    <li>Write regularly, even if just for a few minutes</li>
+                    <li>Be honest and authentic - this is your story</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Chapters View -->
+        <div id="chaptersView" class="view">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2>My Chapters</h2>
+                <button class="btn-primary" onclick="openNewChapterModal()">
+                    ➕ New Chapter
+                </button>
+            </div>
+            <div id="chaptersList" class="chapters-grid"></div>
+        </div>
+
+        <!-- Chapter Detail View -->
+        <div id="chapterDetailView" class="view">
+            <div class="breadcrumb">
+                <button onclick="showView('chapters')">← Back to Chapters</button>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h2 id="chapterTitle"></h2>
+                    <p id="chapterDescription" style="color: var(--text-secondary);"></p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="openNewEntryModal()">
+                        ➕ New Entry
+                    </button>
+                    <button class="btn-secondary btn-small" onclick="editCurrentChapter()">
+                        ✏️ Edit Chapter
+                    </button>
+                    <button class="btn-danger btn-small" onclick="deleteCurrentChapter()">
+                        🗑️ Delete Chapter
+                    </button>
+                </div>
+            </div>
+            <div id="entriesList" class="entries-list"></div>
+        </div>
+    </main>
+
+    <!-- New Chapter Modal -->
+    <div id="newChapterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="chapterModalTitle">Create New Chapter</h2>
+                <button class="close-modal" onclick="closeModal('newChapterModal')">×</button>
+            </div>
+            <form id="chapterForm" onsubmit="saveChapter(event)">
+                <input type="hidden" id="chapterId">
+                <div class="form-group">
+                    <label for="chapterName">Chapter Title *</label>
+                    <input type="text" id="chapterName" required placeholder="e.g., Childhood Memories, College Years, My Career">
+                </div>
+                <div class="form-group">
+                    <label for="chapterDesc">Description</label>
+                    <textarea id="chapterDesc" placeholder="Brief description of this chapter..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-success">💾 Save Chapter</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('newChapterModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- New Entry Modal -->
+    <div id="newEntryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="entryModalTitle">Create New Entry</h2>
+                <button class="close-modal" onclick="closeModal('newEntryModal')">×</button>
+            </div>
+            <form id="entryForm" onsubmit="saveEntry(event)">
+                <input type="hidden" id="entryId">
+                <div class="form-group">
+                    <label for="entryDate">Date *</label>
+                    <input type="date" id="entryDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="entryTitle">Title (Optional)</label>
+                    <input type="text" id="entryTitle" placeholder="Give this memory a title...">
+                </div>
+                <div class="form-group">
+                    <label for="entryContent">Your Story *</label>
+                    <textarea id="entryContent" required placeholder="Write your memory here... Be as detailed as you like. What happened? How did you feel? Who was there?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="entryPhotos">Add Photos</label>
+                    <input type="file" id="entryPhotos" accept="image/*" multiple onchange="previewPhotos(event)">
+                    <div id="photoPreview" class="photo-preview"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-success">💾 Save Entry</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('newEntryModal')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal" class="modal image-preview-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Photo</h2>
+                <button class="close-modal" onclick="closeModal('imagePreviewModal')">×</button>
+            </div>
+            <img id="previewImage" src="" alt="Preview">
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
